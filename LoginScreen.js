@@ -1,72 +1,82 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
+import { TextInput, Button } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import { useAuth } from './AuthContext'; // Import the useAuth hook
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigation = useNavigation();
+    const { login } = useAuth(); // Get the login function
 
     const handleLogin = async () => {
-        const ipAddress = '192.168.18.55'; // Replace with your IP
+        const ipAddress = '192.168.100.24'; // Replace with your IP
         const url = `http://${ipAddress}:8080/api/v1/login`;
 
+        setLoading(true); // Start loading when login begins
         try {
             const response = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password,
-                }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
             });
 
-            const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const responseData = await response.json();
+            const responseData = await response.json();
 
-                if (response.ok) {
-                    Alert.alert('Login Successful', `Welcome back!`);
-                    navigation.navigate('Dashboard'); // Navigate to DashboardScreen on successful login
-                } else {
-                    Alert.alert('Login Failed', responseData.message || 'Invalid email or password');
-                }
+            if (response.ok) {
+                const userData = responseData.user; // Get user data from response
+                login(userData); // Set user in context
+                navigation.navigate('Dashboard'); // Navigate to DashboardScreen on successful login
             } else {
-                const text = await response.text();
-                Alert.alert('Login Failed', 'Unexpected response from the server');
-                console.log('Raw Response:', text);
+                Alert.alert('Login Failed', responseData.message || 'Invalid email or password');
             }
         } catch (error) {
             console.error('Error:', error);
             Alert.alert('Error', 'Something went wrong. Please try again later.');
         }
-    };
-
-    const handleBack = () => {
-        navigation.navigate('HomeScreen'); // Navigate to HomeScreen
+        setLoading(false); // End loading after login attempt
     };
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-                <Text style={styles.backButtonText}>Back</Text>
-            </TouchableOpacity>
+         
+
             <Text style={styles.title}>Login</Text>
+
+            {/* Email Input */}
             <TextInput
-                style={styles.input}
-                placeholder="Email"
+                label="Email"
+                mode="outlined"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
-            />
-            <TextInput
                 style={styles.input}
-                placeholder="Password"
+                autoCapitalize="none"
+            />
+
+            {/* Password Input */}
+            <TextInput
+                label="Password"
+                mode="outlined"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                style={styles.input}
             />
-            <Button title="Login" onPress={handleLogin} />
+
+            {/* Login Button */}
+            <Button
+                mode="contained"
+                onPress={handleLogin}
+                loading={loading} // Show loading indicator while processing login
+                disabled={loading} // Disable button when loading
+                style={styles.button}
+                contentStyle={styles.buttonContent}
+            >
+                Login
+            </Button>
         </View>
     );
 };
@@ -74,51 +84,32 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000',
+        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20,
+        paddingHorizontal: 20,
     },
     backButton: {
-        position: 'absolute',
-        top: 20,
-        left: 20,
-        padding: 10,
-        backgroundColor: '#333',
-        borderRadius: 5,
-    },
-    backButtonText: {
-        color: '#fff',
-        fontSize: 16,
+        alignSelf: 'flex-start',
+        marginBottom: 20,
     },
     title: {
         fontSize: 24,
-        color: '#fff',
+        color: '#1E90FF',
         marginBottom: 20,
-        textAlign: 'center',
+        fontWeight: 'bold',
     },
     input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 10,
+        width: '100%',
         marginBottom: 20,
-        borderRadius: 5,
-        width: '80%',
-        backgroundColor: '#fff',
     },
     button: {
+        width: '100%',
+        borderRadius: 25,
         marginTop: 20,
-        backgroundColor: '#fff',
-        borderRadius: 50,
-        padding: 10,
-        width: '80%',
-        alignItems: 'center',
-        justifyContent: 'center',
     },
-    buttonText: {
-        color: '#000',
-        fontSize: 16,
-        fontWeight: 'bold',
+    buttonContent: {
+        paddingVertical: 8,
     },
 });
 

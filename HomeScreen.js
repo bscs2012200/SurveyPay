@@ -1,8 +1,11 @@
-// HomeScreen.js
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { Button } from 'react-native-paper'; // Add react-native-paper for better UI components
+import { useNavigation } from '@react-navigation/native';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -15,19 +18,25 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.title}>SurveyPay</Text>
       <Text style={styles.subtitle}>Create, Distribute, Earn Money</Text>
 
-      <TouchableOpacity 
+      {/* Register Button */}
+      <Button 
+        mode="contained" 
         style={styles.button} 
+        contentStyle={styles.buttonContent} 
         onPress={() => navigation.navigate('Register')}
       >
-        <Text style={styles.buttonText}>Register</Text>
-      </TouchableOpacity>
+        Register
+      </Button>
 
-      <TouchableOpacity 
-        style={styles.button} 
+      {/* Login Button */}
+      <Button 
+        mode="outlined" 
+        style={styles.buttonOutline} 
+        contentStyle={styles.buttonContent} 
         onPress={() => navigation.navigate('Login')}
       >
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+        Login
+      </Button>
     </View>
   );
 };
@@ -35,43 +44,45 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#f0f4f8',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 20,
   },
   imageContainer: {
     width: '80%',
-    height: '50%',
+    height: '40%',
+    marginBottom: 20,
   },
   image: {
     width: '100%',
     height: '100%',
   },
   title: {
-    fontSize: 24,
-    color: '#fff',
+    fontSize: 30,
+    color: '#1E90FF',
     marginTop: 20,
     fontWeight: 'bold',
   },
   subtitle: {
-    fontSize: 16,
-    color: '#fff',
-    marginTop: 10,
+    fontSize: 18,
+    color: '#666',
+    marginVertical: 10,
     textAlign: 'center',
   },
   button: {
     marginTop: 20,
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    padding: 10,
     width: '80%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: 30,
   },
-  buttonText: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: 'bold',
+  buttonOutline: {
+    marginTop: 10,
+    width: '80%',
+    borderRadius: 30,
+    borderColor: '#1E90FF',
+  },
+  buttonContent: {
+    paddingVertical: 8,
   },
 });
 

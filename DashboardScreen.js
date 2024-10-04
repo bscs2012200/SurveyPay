@@ -1,11 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import { useAuth } from './AuthContext'; // Import the useAuth hook
 
 const DashboardScreen = () => {
+    const { user, logout } = useAuth(); // Get user and logout function
+
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Dashboard</Text>
-            <Text style={styles.content}>Welcome to the Dashboard!</Text>
+            {user ? (
+                <>
+                    <Text style={styles.content}>Welcome, {user.firstName}!</Text>
+                    <Button title="Logout" onPress={logout} />
+                </>
+            ) : (
+                <Text style={styles.content}>No user logged in.</Text>
+            )}
         </View>
     );
 };
